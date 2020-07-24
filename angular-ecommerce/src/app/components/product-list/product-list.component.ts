@@ -10,10 +10,16 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit {
+  //pagination properties
+  thePageNumber: number = 1;
+  thePageSize: number = 5;
+  theTotalElements: number = 0;
+
   products: Product[];
-  currentCategoryId: number;
+  currentCategoryId: number = 1;
+  previousCategoryId: number = 1;
   currentCategoryName: string;
-  searchMode: boolean;
+  searchMode: boolean = false;
 
   constructor(private productService: ProductService,
     private route: ActivatedRoute) { }
@@ -61,11 +67,24 @@ export class ProductListComponent implements OnInit {
       this.currentCategoryName = 'Books';
     }
 
-    this.productService.getProductList(this.currentCategoryId).subscribe(
-      data => {
-        this.products = data;
-      }
-    )
+    if (this.previousCategoryId != this.currentCategoryId) {
+      this.thePageNumber = 1;
+    }
+    this.previousCategoryId = this.currentCategoryId;
+    console.log(`current Category=${this.currentCategoryId}, pageNumber = ${this.thePageNumber}`);
+
+    this.productService
+      .getProductListPaginate(this.thePageNumber - 1, this.thePageSize, this.currentCategoryId)
+      .subscribe(this.processResult());
+  }
+
+  private processResult() {
+    return data => {
+      this.products = data._embedded.products;
+      this.thePageNumber = data.page.number + 1;
+      this.thePageSize = data.page.size;
+      this.theTotalElements = data.page.totalElements;
+    }
   }
 
 }
