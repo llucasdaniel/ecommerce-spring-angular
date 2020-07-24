@@ -21,6 +21,8 @@ export class ProductListComponent implements OnInit {
   currentCategoryName: string;
   searchMode: boolean = false;
 
+  previousKeyword: string;
+
   constructor(private productService: ProductService,
     private route: ActivatedRoute) { }
 
@@ -45,11 +47,16 @@ export class ProductListComponent implements OnInit {
   handleSearchProducts() {
     const theKeyword: string = this.route.snapshot.paramMap.get('keyword');
 
-    this.productService.getProductListByName(theKeyword).subscribe(
-      data => {
-        this.products = data;
-      }
-    )
+    //if we have a different keyword from previous 
+    //then set pageNuber = 1
+
+    if (this.previousKeyword != theKeyword) {
+      this.thePageNumber = 1;
+    }
+    this.previousKeyword = theKeyword;
+    
+    this.productService.getProductListByNamePaginate(this.thePageNumber - 1, this.thePageSize, theKeyword).subscribe(
+      this.processResult());
   }
 
   handleListProducs() {
@@ -62,7 +69,7 @@ export class ProductListComponent implements OnInit {
       // get the "name" param string
       this.currentCategoryName = this.route.snapshot.paramMap.get('name');
     } else {
-      // not category id available ... default to category id 1
+      // no category id available ... default to category id 1
       this.currentCategoryId = 1;
       this.currentCategoryName = 'Books';
     }
@@ -71,7 +78,6 @@ export class ProductListComponent implements OnInit {
       this.thePageNumber = 1;
     }
     this.previousCategoryId = this.currentCategoryId;
-    console.log(`current Category=${this.currentCategoryId}, pageNumber = ${this.thePageNumber}`);
 
     this.productService
       .getProductListPaginate(this.thePageNumber - 1, this.thePageSize, this.currentCategoryId)
@@ -85,6 +91,12 @@ export class ProductListComponent implements OnInit {
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     }
+  }
+
+  updatePageSize(pageSize: number) {
+    this.thePageSize = pageSize;
+    this.thePageNumber = 1;
+    this.listProducts();
   }
 
 }
