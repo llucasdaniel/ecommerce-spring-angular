@@ -28,6 +28,7 @@ public class DataRestConfig implements RepositoryRestConfigurer {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
 //        Disable this HTTP methods for API
+
         HttpMethod[] unsupporttedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
 
         config.getExposureConfiguration()
