@@ -15,19 +15,39 @@ export class CartService {
   constructor() { }
 
 
-  addToCart(theCartItem: CartItem){
+  removeFromCart(tempCartItem: CartItem) {
+    // check if we already have the item in our cart
+
+    tempCartItem.quantity--;
+    if (tempCartItem.quantity === 0) {
+      this.remove(tempCartItem);
+    } else {
+      this.computeCartTotals();
+    }
+
+  }
+
+  remove(tempCartItem: CartItem) {
+    const itemIndex = this.cartItems.findIndex(item => item.id == tempCartItem.id);
+    if (itemIndex > -1) {
+      this.cartItems.splice(itemIndex, 1);
+      this.computeCartTotals();
+    }
+
+  }
+  addToCart(theCartItem: CartItem) {
     // check if we already have the item in our cart
     let alreadyExistInCart: boolean = false;
     let existingCartItem: CartItem = undefined;
-    if(this.cartItems.length > 0) {
+    if (this.cartItems.length > 0) {
       existingCartItem = this.cartItems.find(tempCartItem => tempCartItem.id == theCartItem.id);
       alreadyExistInCart = (existingCartItem != undefined)
     }
 
-    if(alreadyExistInCart) {
+    if (alreadyExistInCart) {
       //increment quantity
       existingCartItem.quantity++;
-    }else{
+    } else {
       this.cartItems.push(theCartItem);
     }
 
@@ -38,7 +58,7 @@ export class CartService {
     let totalPriceValue: number = 0;
     let totalQuantityValue: number = 0;
 
-    for(let currentCartItem of this.cartItems){
+    for (let currentCartItem of this.cartItems) {
       totalPriceValue += currentCartItem.quantity * currentCartItem.unitPrice;
       totalQuantityValue += currentCartItem.quantity;
     }
@@ -51,7 +71,7 @@ export class CartService {
 
   logCartData(totalPriceValue: number, totalQuantityValue: number) {
     console.log('Contents of the cart');
-    for(let tempCartItem of this.cartItems){
+    for (let tempCartItem of this.cartItems) {
       const subTotalPrice = tempCartItem.quantity * tempCartItem.unitPrice;
       console.log(`name=${tempCartItem.name}, quantity=${tempCartItem.quantity}, unitPrice=${tempCartItem.unitPrice}, subTotalPrice=${subTotalPrice} `);
     }
