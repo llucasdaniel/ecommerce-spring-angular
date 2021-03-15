@@ -9,6 +9,7 @@ import com.lucasd.ecommerce.entity.OrderItem;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,6 +28,13 @@ public class CheckoutServiceImpl implements CheckoutService {
         //retrieve order info from DTO
         Order order = purchase.getOrder();
 
+        Customer customer = purchase.getCustomer();
+
+        Customer customerDb = customerRepository.findByEmail(purchase.getCustomer().getEmail());
+        if (Objects.nonNull(customerDb)) {
+            customer = customerDb;
+        }
+
         //generate tracking number
         String orderTrackingNumber = generateOrderTrackingNumber();
         order.setOrderTrackingNumber(orderTrackingNumber);
@@ -40,7 +48,6 @@ public class CheckoutServiceImpl implements CheckoutService {
         order.setShippingAddress(purchase.getShippingAddress());
 
         // populate customer with order
-        Customer customer = purchase.getCustomer();
         customer.add(order);
 
         //save to the database

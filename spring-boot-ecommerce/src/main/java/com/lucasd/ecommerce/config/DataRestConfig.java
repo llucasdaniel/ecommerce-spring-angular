@@ -5,10 +5,12 @@ import com.lucasd.ecommerce.entity.Product;
 import com.lucasd.ecommerce.entity.ProductCategory;
 import com.lucasd.ecommerce.entity.State;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.EntityType;
@@ -19,6 +21,8 @@ import java.util.Set;
 @Configuration
 public class DataRestConfig implements RepositoryRestConfigurer {
 
+    @Value("${allowed.origins}")
+    private String[] allowedOrigins;
 
     private EntityManager entityManager;
 
@@ -28,10 +32,11 @@ public class DataRestConfig implements RepositoryRestConfigurer {
     }
 
     @Override
-    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
 //        Disable this HTTP methods for API
 
-        HttpMethod[] unsupporttedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
+        HttpMethod[] unsupporttedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH};
+
 
         disableHttpMethods(config, unsupporttedActions, Product.class);
         disableHttpMethods(config, unsupporttedActions, ProductCategory.class);
@@ -40,6 +45,9 @@ public class DataRestConfig implements RepositoryRestConfigurer {
 
         //call to expose Ids
         exposeIds(config);
+
+        //cors configuration
+        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(allowedOrigins);
     }
 
     private void disableHttpMethods(RepositoryRestConfiguration config, HttpMethod[] unsupporttedActions, Class theClass) {
