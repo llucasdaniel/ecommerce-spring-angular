@@ -1,9 +1,6 @@
 package com.lucasd.ecommerce.config;
 
-import com.lucasd.ecommerce.entity.Country;
-import com.lucasd.ecommerce.entity.Product;
-import com.lucasd.ecommerce.entity.ProductCategory;
-import com.lucasd.ecommerce.entity.State;
+import com.lucasd.ecommerce.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +39,7 @@ public class DataRestConfig implements RepositoryRestConfigurer {
         disableHttpMethods(config, unsupporttedActions, ProductCategory.class);
         disableHttpMethods(config, unsupporttedActions, Country.class);
         disableHttpMethods(config, unsupporttedActions, State.class);
+        disableHttpMethods(config, unsupporttedActions, Order.class);
 
         //call to expose Ids
         exposeIds(config);

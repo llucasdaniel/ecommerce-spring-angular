@@ -148,15 +148,11 @@ export class CheckoutComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log("Handling the submit button");
-    console.log(this.checkoutFormGroup.invalid);
-    console.log(this.checkoutFormGroup);
     if (this.checkoutFormGroup.invalid) {
       this.checkoutFormGroup.markAllAsTouched();
       return;
     }
 
-    console.log("Lucas 222");
     let order = new Order;
     order.totalPrice = this.totalPrice;
     order.totalQuantity = this.totalQuantity;
@@ -166,7 +162,6 @@ export class CheckoutComponent implements OnInit {
     let orderItems: OrderItem[] = cartItems.map(temp => new OrderItem(temp));
 
     let purchase = new Purchase;
-    console.log("Lucas 3");
 
     //customer
    purchase.customer = this.checkoutFormGroup.controls['customer'].value;
@@ -177,7 +172,6 @@ export class CheckoutComponent implements OnInit {
     const shippingCountry: Country = JSON.parse(JSON.stringify(purchase.shippingAddress.country));
     purchase.shippingAddress.state = shippingState.name;
     purchase.shippingAddress.country = shippingCountry.name;
-    console.log("Lucas 4");
 
     //billing address
     purchase.billingAddress = this.checkoutFormGroup.controls['billingAddress'].value;
@@ -230,7 +224,6 @@ export class CheckoutComponent implements OnInit {
 
     this.luv2ShopFormService.getCreditCardMonths(startMonth).subscribe(
       data => {
-        console.info("credicard monthts" + JSON.stringify(data));
         this.creditCardMonths = data;
       }
     );

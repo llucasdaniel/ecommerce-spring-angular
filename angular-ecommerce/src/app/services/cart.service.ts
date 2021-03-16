@@ -9,12 +9,23 @@ export class CartService {
 
   cartItems: CartItem[] = [];
 
+  storage: Storage = localStorage;
+
   // BehaviorSubject return last value value when a class subscribe to get that values;
   totalPrice: Subject<number> = new BehaviorSubject<number>(0);
   totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
 
-  constructor() { }
+  constructor() {
+    let data = JSON.parse(this.storage.getItem('cartItems'));
+    if (data != null) {
+      this.cartItems = data;
+    }
+    this.computeCartTotals();
+  }
 
+  persistCartItems() {
+    this.storage.setItem('cartItems', JSON.stringify(this.cartItems));
+  }
 
   removeFromCart(tempCartItem: CartItem) {
     // check if we already have the item in our cart
@@ -68,6 +79,8 @@ export class CartService {
     this.totalQuantity.next(totalQuantityValue);
 
     this.logCartData(totalPriceValue, totalQuantityValue);
+
+    this.persistCartItems();
   }
 
   logCartData(totalPriceValue: number, totalQuantityValue: number) {
